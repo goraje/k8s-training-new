@@ -1,0 +1,6 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/namespace-v1/
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: project-x

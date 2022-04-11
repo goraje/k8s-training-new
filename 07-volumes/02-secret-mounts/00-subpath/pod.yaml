@@ -1,0 +1,41 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-x
+  namespace: project-x
+  labels:
+    app.kubernetes.io/name: project-x
+    app.kubernetes.io/part-of: project-x
+spec:
+  containers:
+    - name: project-x
+      image: registry.dev.svc.cluster.local:5000/project-x:0.3.0
+      env:
+        - name: PROJECT_X_CONFIG_PATH
+          value: "/project-x/config/config.toml"
+      ports:
+        - containerPort: 8000
+          name: project-x-api
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: project-x-api
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: project-x-api
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      volumeMounts:
+        - mountPath: "/project-x/config/config.toml"
+          name: project-x-config
+          subPath: config.toml
+  volumes:
+    - name: project-x-config
+      secret:
+        secretName: project-x

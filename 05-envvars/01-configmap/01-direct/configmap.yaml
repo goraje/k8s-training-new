@@ -1,0 +1,14 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/config-map-v1/
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-x
+  namespace: project-x
+  labels:
+    app.kubernetes.io/name: project-x
+    app.kubernetes.io/part-of: project-x
+data:
+  PROJECT_X_UVICORN_HOST: "0.0.0.0"
+  PROJECT_X_UVICORN_PORT: "9000"
+  PROJECT_X_UVICORN_LOG_LEVEL: "info"

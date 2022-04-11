@@ -1,0 +1,40 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/
+# https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-x
+  namespace: project-x
+  labels:
+    app.kubernetes.io/name: project-x
+    app.kubernetes.io/part-of: project-x
+spec:
+  containers:
+    - name: project-x
+      image: registry.dev.svc.cluster.local:5000/project-x:0.1.0
+      command:
+        - /bin/bash
+        - -c
+        - "sleep 15 && uvicorn 'project_x.main:app' --host 0.0.0.0 --port 8000"
+      ports:
+        - containerPort: 8000
+          name: project-x-api
+          protocol: TCP
+      readinessProbe:
+        exec:
+          command:
+            - pgrep
+            - -x
+            - uvicorn
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      livenessProbe:
+        exec:
+          command:
+            - pgrep
+            - -x
+            - uvicorn
+        initialDelaySeconds: 5
+        periodSeconds: 5

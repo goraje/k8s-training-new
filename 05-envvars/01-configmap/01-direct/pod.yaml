@@ -1,0 +1,34 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/
+# https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-x
+  namespace: project-x
+  labels:
+    app.kubernetes.io/name: project-x
+    app.kubernetes.io/part-of: project-x
+spec:
+  containers:
+    - name: project-x
+      image: registry.dev.svc.cluster.local:5000/project-x:0.2.0
+      envFrom:
+        - configMapRef:
+            name: project-x
+      ports:
+        - containerPort: 9000
+          name: project-x-api
+          protocol: TCP
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: project-x-api
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: project-x-api
+        initialDelaySeconds: 5
+        periodSeconds: 5
