@@ -1,0 +1,28 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: project-x
+  namespace: project-x
+  labels:
+    app.kubernetes.io/name: project-x
+    app.kubernetes.io/part-of: project-x
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: project-x
+                operator: In
+                values:
+                  - enabled
+  containers:
+    - name: project-x
+      image: registry.dev.svc.cluster.local:5000/project-x:0.1.0
+      ports:
+        - containerPort: 8000
+          name: project-x-api
+          protocol: TCP

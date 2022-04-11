@@ -1,0 +1,61 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: project-x
+  namespace: project-x
+  labels:
+    app.kubernetes.io/name: project-x
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: project-x
+      app.kubernetes.io/part-of: project-x
+  serviceName: project-x
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: project-x
+        app.kubernetes.io/part-of: project-x
+    spec:
+      containers:
+        - name: project-x
+          image: registry.dev.svc.cluster.local:5000/project-x:0.3.0
+          env:
+            - name: PROJECT_X_UVICORN_HOST
+              value: "0.0.0.0"
+            - name: PROJECT_X_UVICORN_PORT
+              value: "8000"
+            - name: PROJECT_X_UVICORN_LOG_LEVEL
+              value: "debug"
+          ports:
+            - containerPort: 8000
+              name: project-x-api
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: project-x-api
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: project-x-api
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - mountPath: "/mnt"
+              name: project-x-pv
+  volumeClaimTemplates:
+    - metadata:
+        name: project-x-pv
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 10Mi

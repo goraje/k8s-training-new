@@ -1,0 +1,13 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/policy-resources/pod-disruption-budget-v1/
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: project-x
+  namespace: project-x
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: project-x
+      app.kubernetes.io/part-of: project-x

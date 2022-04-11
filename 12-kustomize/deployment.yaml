@@ -1,0 +1,48 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-x
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: project-x
+          image: registry.dev.svc.cluster.local:5000/project-x:init
+          envFrom:
+            - secretRef:
+                name: project-x
+          ports:
+            - containerPort: 8000
+              name: project-x-api
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: project-x-api
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: project-x-api
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          volumeMounts:
+            - mountPath: "/project-x/config/"
+              name: project-x-config
+      volumes:
+        - name: project-x-config
+          configMap:
+            name: project-x

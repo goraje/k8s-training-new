@@ -1,0 +1,22 @@
+# https://kustomize.io/
+
+namespace: project-x
+commonLabels:
+  app.kubernetes.io/name: project-x
+  app.kubernetes.io/part-of: project-x
+resources:
+  - deployment.yaml
+  - service.yaml
+configMapGenerator:
+  - files:
+      - config.toml=files/config.toml
+    name: project-x
+secretGenerator:
+  - envs:
+      - secrets/project-x.env
+    name: project-x
+generatorOptions:
+  disableNameSuffixHash: true
+images:
+  - name: registry.dev.svc.cluster.local:5000/project-x
+    newTag: 0.3.0

@@ -1,0 +1,20 @@
+# https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-x
+  namespace: project-x
+  labels:
+    app.kubernetes.io/name: project-x
+    app.kubernetes.io/part-of: project-x
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: project-x
+    app.kubernetes.io/part-of: project-x
+  ports:
+    - name: project-x
+      port: 80
+      protocol: TCP
+      targetPort: project-x-api
